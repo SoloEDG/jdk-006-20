@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Radio,
   FolderOpen,
@@ -12,6 +12,7 @@ import {
   Check,
   ChevronRight,
   Info,
+  CloudUpload,
 } from "lucide-react";
 import {
   CASE_CONTENT,
@@ -24,6 +25,7 @@ import { Player } from "../features/listening";
 import { TranscriptPanel } from "../features/transcript";
 import { EvidencePanel, canCollectSound } from "../features/evidence";
 import { ProfilesDialog } from "../features/profiles";
+import { RecoveryDialog, AutoSaveBanner } from "../features/recovery";
 import { currentCue } from "../features/transcript";
 import { useCase } from "./useCase";
 export function App() {
@@ -38,6 +40,10 @@ export function App() {
     c.audio.pause();
     setProfiles(true);
   };
+  // 恢复含未提交草稿的调查时，自动回到证据手记的编辑界面
+  useEffect(() => {
+    if (c.evidenceFocus > 0) setTab("evidence");
+  }, [c.evidenceFocus]);
   return (
     <div className="app">
       <header className="topbar">
@@ -195,6 +201,14 @@ export function App() {
                   ? `${activeSlot.name}${c.dirty ? " · 有未保存更改" : " · 已保存"}`
                   : "未命名的调查路线"}
               </span>
+              <span className="autosave-pill" title="自动恢复记录独立保存，不占用命名存档档位">
+                <CloudUpload size={12} />
+                {c.autoSave.status === "paused"
+                  ? "自动保存已暂停"
+                  : c.autoSave.savedAt
+                    ? "已自动记录"
+                    : "自动记录待命"}
+              </span>
               <button onClick={showProfiles}>
                 <Save size={13} />
                 保存进度
@@ -242,8 +256,14 @@ export function App() {
               <EvidencePanel
                 state={c.evidence}
                 content={CASE_CONTENT}
+                editingId={c.editingId}
+                draftText={c.draftText}
+                draftIds={c.draftIds}
                 onJump={c.jump}
-                onEdit={c.edit}
+                onStartEdit={c.startEdit}
+                onDraftChange={c.changeDraft}
+                onSubmitEdit={c.submitEdit}
+                onCancelEdit={c.cancelEdit}
                 onDelete={c.remove}
                 onPin={c.pin}
                 onNew={c.note}
@@ -278,6 +298,11 @@ export function App() {
             </div>
           </aside>
         </div>
+        <AutoSaveBanner
+          state={c.autoSave}
+          advice={c.autoSaveAdvice}
+          onRetry={c.retryAutoSave}
+        />
         <div role="status" className="notice">
           <span className="live-dot" />
           {c.notice}
@@ -291,6 +316,15 @@ export function App() {
           </span>
         </footer>
       </main>
+      {c.recoveryPrompt && (
+        <RecoveryDialog
+          recovery={c.recoveryPrompt}
+          warning={c.recoveryWarning}
+          quarantine={c.quarantine}
+          onResume={c.resumeRecovery}
+          onDiscard={c.discardRecovery}
+        />
+      )}
       {profiles && (
         <ProfilesDialog
           slots={c.slots}
@@ -322,6 +356,9 @@ export function App() {
             </p>
             <p>
               用「标记此刻」保留最近五秒的个人笔记，编辑观察，再从笔记跳回录音。自由笔记不会自动解锁证据。
+            </p>
+            <p>
+              调查过程会自动形成恢复记录：线索、方向、播放暂停点和笔记编辑框里未提交的草稿都会定期保存。下次打开可选择恢复或丢弃，自动记录不占用八个命名存档档位，也不会提前覆盖正式笔记。
             </p>
             <p>
               从「调查存档」命名保存不同进度，也可导出或导入本地文件。新调查保留已有存档；切换存档会替换当前未保存进度，请先保存。

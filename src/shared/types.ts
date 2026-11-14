@@ -91,6 +91,17 @@ export interface SaveSlot {
   updatedAt: number;
   snapshot: CaseSnapshot;
 }
+export interface NoteDraft {
+  noteId: string;
+  text: string;
+}
+export interface AutoRecovery {
+  version: 1;
+  caseId: string;
+  savedAt: number;
+  snapshot: CaseSnapshot;
+  drafts: NoteDraft[];
+}
 export interface TransportState {
   requestedId: string;
   loadedId: string | null;

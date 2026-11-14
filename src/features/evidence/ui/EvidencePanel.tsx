@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Bookmark,
   Check,
@@ -8,6 +7,7 @@ import {
   Trash2,
   X,
   Pencil,
+  FilePenLine,
 } from "lucide-react";
 import type {
   CaseContent,
@@ -17,8 +17,14 @@ import type {
 interface Props {
   state: EvidenceState;
   content: CaseContent;
+  editingId: string | null;
+  draftText: string;
+  draftIds: string[];
   onJump: (note: EvidenceNote) => void;
-  onEdit: (id: string, text: string) => void;
+  onStartEdit: (id: string) => void;
+  onDraftChange: (id: string, text: string) => void;
+  onSubmitEdit: (id: string) => void;
+  onCancelEdit: () => void;
   onDelete: (id: string) => void;
   onPin: (id: string) => void;
   onNew: () => void;
@@ -32,14 +38,18 @@ const time = (n: number) =>
 export function EvidencePanel({
   state,
   content,
+  editingId,
+  draftText,
+  draftIds,
   onJump,
-  onEdit,
+  onStartEdit,
+  onDraftChange,
+  onSubmitEdit,
+  onCancelEdit,
   onDelete,
   onPin,
   onNew,
 }: Props) {
-  const [editing, setEditing] = useState<string | null>(null),
-    [draft, setDraft] = useState("");
   const notes = [...state.notes].sort(
     (a, b) => Number(b.pinned) - Number(a.pinned),
   );
@@ -74,6 +84,11 @@ export function EvidencePanel({
               <div className="note-heading">
                 <span className="note-kind">
                   {note.clueId ? "声音线索" : "收听笔记"}
+                  {draftIds.includes(note.id) && (
+                    <em className="draft-tag">
+                      <FilePenLine size={10} /> 未提交草稿
+                    </em>
+                  )}
                 </span>
                 <button
                   className={`icon-button ${note.pinned ? "active" : ""}`}
@@ -89,24 +104,21 @@ export function EvidencePanel({
                       ?.title || note.title
                   : note.title}
               </h3>
-              {editing === note.id ? (
+              {editingId === note.id ? (
                 <>
                   <textarea
                     aria-label="编辑笔记"
-                    value={draft}
-                    onChange={(event) => setDraft(event.target.value)}
+                    value={draftText}
+                    onChange={(event) => onDraftChange(note.id, event.target.value)}
                   />
                   <div className="note-actions">
                     <button
-                      disabled={!draft.trim()}
-                      onClick={() => {
-                        onEdit(note.id, draft);
-                        setEditing(null);
-                      }}
+                      disabled={!draftText.trim()}
+                      onClick={() => onSubmitEdit(note.id)}
                     >
                       <Check size={13} /> 保存
                     </button>
-                    <button onClick={() => setEditing(null)}>
+                    <button onClick={onCancelEdit}>
                       <X size={13} /> 取消
                     </button>
                   </div>
@@ -126,10 +138,7 @@ export function EvidencePanel({
               <div className="note-actions">
                 <button
                   aria-label="编辑笔记"
-                  onClick={() => {
-                    setEditing(note.id);
-                    setDraft(note.text);
-                  }}
+                  onClick={() => onStartEdit(note.id)}
                 >
                   <Pencil size={13} /> 编辑
                 </button>

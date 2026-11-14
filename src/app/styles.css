@@ -1660,3 +1660,113 @@ footer i {
   display: block;
   margin-bottom: 10px;
 }
+.autosave-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #7f9a8e;
+  white-space: nowrap;
+}
+.autosave-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 5px;
+  padding: 11px 14px;
+  margin: 14px 0 0;
+  font-size: 10px;
+  line-height: 1.8;
+}
+.autosave-banner.active {
+  background: #14232b;
+  border: 1px solid #2c4436;
+  color: #8fb6a1;
+}
+.autosave-banner.active svg {
+  margin-top: 3px;
+  color: #9ec3ac;
+}
+.autosave-banner.paused {
+  background: #2a2018;
+  border: 1px solid #6b4f33;
+  color: #e3bd92;
+}
+.autosave-banner.paused p {
+  margin: 0;
+}
+.autosave-banner.paused ul {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  color: #c9a985;
+}
+.autosave-banner.paused > button {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #7a5c3c;
+  border-radius: 4px;
+  padding: 7px 10px;
+  color: #eccb9d;
+  background: #33271b;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.recovery-dialog {
+  width: min(620px, 94vw);
+}
+.recovery-summary {
+  margin: 16px 0;
+}
+.recovery-draft-note {
+  color: #b3a17c !important;
+}
+.recovery-warning {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  line-height: 1.8;
+}
+.quarantine-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 9px;
+  color: #a48a78;
+  line-height: 2;
+}
+.recovery-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+.recovery-actions button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 4px;
+  padding: 11px 16px;
+  font-size: 11px;
+}
+.recovery-actions .primary-button {
+  background: #cdb17b;
+  border: 1px solid #e1c894;
+  color: #1a2b32;
+}
+.recovery-actions .secondary-button {
+  background: #203440;
+  border: 1px solid #3d5360;
+  color: #c2cbd0;
+}
+.draft-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-style: normal;
+  margin-left: 8px;
+  padding: 2px 6px;
+  border: 1px dashed #8a6f4c;
+  border-radius: 3px;
+  color: #d3b588;
+  font-size: 8px;
+}
